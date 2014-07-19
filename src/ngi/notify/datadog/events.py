@@ -22,14 +22,16 @@ def modifiedContent(obj, event):
     """
     user = api.user.get_current()
     path = '/'.join(obj.getPhysicalPath())
-    notify_datadog(user, path)
+    state = api.content.get_state(obj=obj)
+    notify_datadog(user, path, state)
 
 
-def notify_datadog(user, path=''):
+def notify_datadog(user, path='', state=''):
     """
     notify to Datadog service
     :param user:
     :param path:
+    :param state:
     :return:
     """
     dd_api_key = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.api_key')
@@ -45,4 +47,8 @@ def notify_datadog(user, path=''):
     now = dt.now()
     data = (time.mktime(now.timetuple()), 1)
 
-    dog.metric('plone.modified', data, host=host_name, tags=['user:%s' % user, 'path:%s' % path, 'modified'])
+    dog.metric('plone.modified', data, host=host_name,
+               tags=['user:%s' % user,
+                     'path:%s' % path,
+                     'modified',
+                     'wf:%s' % state])
