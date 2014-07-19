@@ -31,11 +31,5 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
-  <!-- Resource directory for images -->
-  <plone:static
-        directory="static"
-        type="theme"
-        />
-
 
 </configure>

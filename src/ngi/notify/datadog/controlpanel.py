@@ -9,17 +9,25 @@ from zope import schema
 from zope.interface import Interface
 from plone.app.registry.browser import controlpanel
 from ngi.notify.datadog import _
-    
 
 
 class IDatadog(Interface):
     """ a Datadog settings """
 
     api_key = schema.TextLine(
-        title=_(u'api_key_title', default = u'api_key'),
+        title=_(u'api_key_title', default=u'api_key'),
         required=True,
-        )
+    )
 
+    application_key = schema.TextLine(
+        title=_(u'application_key_title', default=u'application_key'),
+        required=True,
+    )
+
+    host_name = schema.TextLine(
+        title=_(u'host_name_title', default=u'host_name'),
+        required=True,
+    )
 
 
 class DatadogEditForm(controlpanel.RegistryEditForm):
