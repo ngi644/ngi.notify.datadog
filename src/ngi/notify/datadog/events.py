@@ -4,15 +4,38 @@ Created on 07/18/14
 
 @author: Takashi NAGAI
 """
-
-import time
-from datetime import datetime as dt
-from dogapi import dog_http_api as dog
-
+from zope.interface import Interface
 from five import grok
-from zope.lifecycleevent.interfaces import IObjectModifiedEvent
+from zope.lifecycleevent.interfaces import (IObjectCreatedEvent,
+                                            IObjectModifiedEvent)
 from Products.CMFCore.interfaces import IContentish
+from Products.PlonePAS.events import (UserInitialLoginInEvent,
+                                      UserLoggedInEvent,
+                                      UserLoggedOutEvent)
+
 from plone import api
+
+from ngi.notify.datadog.dd import notify_datadog
+
+
+@grok.subscribe(IContentish, IObjectCreatedEvent)
+def createdContent(obj, event):
+    """
+    Created Event
+    """
+    user = api.user.get_current()
+    path = '/'.join(obj.getPhysicalPath())
+    state = api.content.get_state(obj=obj)
+    portal_type = obj.portal_type
+    content_type = obj.Type()
+    metric_name = 'plone.created'
+    tags = dict(user=user.id,
+                path=path,
+                content_type=content_type,
+                portal_type=portal_type,
+                action='object_created',
+                workflow=state)
+    notify_datadog(metric_name, tags)
 
 
 @grok.subscribe(IContentish, IObjectModifiedEvent)
@@ -23,32 +46,51 @@ def modifiedContent(obj, event):
     user = api.user.get_current()
     path = '/'.join(obj.getPhysicalPath())
     state = api.content.get_state(obj=obj)
-    notify_datadog(user, path, state)
+    portal_type = obj.portal_type
+    content_type = obj.Type()
+    metric_name = 'plone.modified'
+    tags = dict(user=user.id,
+                path=path,
+                content_type=content_type,
+                portal_type=portal_type,
+                action='object_modified',
+                workflow=state)
+    notify_datadog(metric_name, tags)
 
 
-def notify_datadog(user, path='', state=''):
+def _log_in_out(metric_name, action):
     """
-    notify to Datadog service
-    :param user:
-    :param path:
-    :param state:
+
+    :param metric_name:
+    :param action:
     :return:
     """
-    dd_api_key = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.api_key')
-    dd_app_key = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.application_key')
-    host_name = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.host_name')
+    user = api.user.get_current()
+    path = '/'.join(obj.getPhysicalPath())
+    metric_name = metric_name
+    tags = dict(user=user.id,
+                path=path,
+                action=action)
+    notify_datadog(metric_name, tags)
 
-    if not dd_api_key:
-        return
 
-    dog.api_key = dd_api_key
-    dog.application_key = dd_app_key
+@grok.subscribe(Interface, UserLoggedInEvent)
+def loggedIn(obj, event):
+    """
+    logged_out event
+    :param obj:
+    :param event:
+    :return:
+    """
+    _log_in_out(u'plone.login', u'login')
 
-    now = dt.now()
-    data = (time.mktime(now.timetuple()), 1)
 
-    dog.metric('plone.modified', data, host=host_name,
-               tags=['user:%s' % user,
-                     'path:%s' % path,
-                     'modified',
-                     'wf:%s' % state])
+@grok.subscribe(Interface, UserLoggedOutEvent)
+def loggedOut(obj, event):
+    """
+    logged_out event
+    :param obj:
+    :param event:
+    :return:
+    """
+    _log_in_out(u'plone.logout', u'logout')

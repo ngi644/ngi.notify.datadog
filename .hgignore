@@ -1,0 +1,22 @@
+syntax: glob
+*~
+*.pyc
+*.pyo
+dist/*
+build/*
+*.egg-info/*
+.semantic.cache
+.DS_Store
+TAGS
+.DS_Store
+.svn
+.hg
+.hgsvn
+.as2proj
+.as3proj
+Thumbs.db
+Paste*
+.idea
+*.sqlite
+_tmp
+*.swp
