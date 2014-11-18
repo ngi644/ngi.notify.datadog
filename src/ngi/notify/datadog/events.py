@@ -17,7 +17,7 @@ from Products.CMFCore.interfaces import IContentish
 from Products.PlonePAS.events import (UserInitialLoginInEvent,
                                       UserLoggedInEvent,
                                       UserLoggedOutEvent)
-
+from Products.CMFCore.interfaces import IActionSucceededEvent
 from ngi.notify.datadog import _
 from ngi.notify.datadog import dd_msg_pool
 from ngi.notify.datadog.dd import (metric_datadog,
@@ -40,9 +40,9 @@ def createdContent(obj, event):
     metric_name = u'plone.created'
     tags = dict(user=user.id,
                 path=path,
+                title=obj.title,
                 content_type=content_type,
                 portal_type=portal_type,
-                action=u'object_created',
                 workflow=state)
     metric_datadog(metric_name, tags=tags)
 
@@ -63,9 +63,38 @@ def modifiedContent(obj, event):
     metric_name = u'plone.modified'
     tags = dict(user=user.id,
                 path=path,
+                title=obj.title,
                 content_type=content_type,
                 portal_type=portal_type,
-                action=u'object_modified',
+                workflow=state)
+    metric_datadog(metric_name, tags=tags)
+
+
+@grok.subscribe(IContentish, IActionSucceededEvent)
+def actionSucceeded(obj, event):
+    """
+
+    :param obj:
+    :param event:
+    :return:
+    """
+    #import pdb;pdb.set_trace()
+    user = api.user.get_current()
+    path = '/'.join(obj.getPhysicalPath())
+    try:
+        state = api.content.get_state(obj=obj)
+    except:
+        state = u'none'
+    portal_type = obj.portal_type
+    content_type = obj.Type()
+    wf_action = event.action
+    metric_name = u'plone.workflow_action'
+    tags = dict(user=user.id,
+                path=path,
+                title=obj.title,
+                content_type=content_type,
+                portal_type=portal_type,
+                action=wf_action,
                 workflow=state)
     metric_datadog(metric_name, tags=tags)
 
