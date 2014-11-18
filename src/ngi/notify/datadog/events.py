@@ -4,18 +4,24 @@ Created on 07/18/14
 
 @author: Takashi NAGAI
 """
+import time
+from datetime import datetime as dt
 from zope.interface import Interface
 from five import grok
+from plone import api
 from zope.lifecycleevent.interfaces import (IObjectCreatedEvent,
                                             IObjectModifiedEvent)
+from zope.processlifetime import (IDatabaseOpened,
+                                  IProcessStarting)
 from Products.CMFCore.interfaces import IContentish
 from Products.PlonePAS.events import (UserInitialLoginInEvent,
                                       UserLoggedInEvent,
                                       UserLoggedOutEvent)
 
-from plone import api
-
-from ngi.notify.datadog.dd import notify_datadog
+from ngi.notify.datadog import _
+from ngi.notify.datadog import dd_msg_pool
+from ngi.notify.datadog.dd import (metric_datadog,
+                                   event_datadog)
 
 
 @grok.subscribe(IContentish, IObjectCreatedEvent)
@@ -25,17 +31,20 @@ def createdContent(obj, event):
     """
     user = api.user.get_current()
     path = '/'.join(obj.getPhysicalPath())
-    state = api.content.get_state(obj=obj)
+    try:
+        state = api.content.get_state(obj=obj)
+    except:
+        state = u'none'
     portal_type = obj.portal_type
     content_type = obj.Type()
-    metric_name = 'plone.created'
+    metric_name = u'plone.created'
     tags = dict(user=user.id,
                 path=path,
                 content_type=content_type,
                 portal_type=portal_type,
-                action='object_created',
+                action=u'object_created',
                 workflow=state)
-    notify_datadog(metric_name, tags)
+    metric_datadog(metric_name, tags=tags)
 
 
 @grok.subscribe(IContentish, IObjectModifiedEvent)
@@ -45,20 +54,23 @@ def modifiedContent(obj, event):
     """
     user = api.user.get_current()
     path = '/'.join(obj.getPhysicalPath())
-    state = api.content.get_state(obj=obj)
+    try:
+        state = api.content.get_state(obj=obj)
+    except:
+        state = u'none'
     portal_type = obj.portal_type
     content_type = obj.Type()
-    metric_name = 'plone.modified'
+    metric_name = u'plone.modified'
     tags = dict(user=user.id,
                 path=path,
                 content_type=content_type,
                 portal_type=portal_type,
-                action='object_modified',
+                action=u'object_modified',
                 workflow=state)
-    notify_datadog(metric_name, tags)
+    metric_datadog(metric_name, tags=tags)
 
 
-def _log_in_out(metric_name, action):
+def _log_in_out(metric_name, action, obj):
     """
 
     :param metric_name:
@@ -71,7 +83,7 @@ def _log_in_out(metric_name, action):
     tags = dict(user=user.id,
                 path=path,
                 action=action)
-    notify_datadog(metric_name, tags)
+    metric_datadog(metric_name, tags=tags)
 
 
 @grok.subscribe(Interface, UserLoggedInEvent)
@@ -82,7 +94,7 @@ def loggedIn(obj, event):
     :param event:
     :return:
     """
-    _log_in_out(u'plone.login', u'login')
+    _log_in_out(u'plone.login', u'login', obj)
 
 
 @grok.subscribe(Interface, UserLoggedOutEvent)
@@ -93,4 +105,42 @@ def loggedOut(obj, event):
     :param event:
     :return:
     """
-    _log_in_out(u'plone.logout', u'logout')
+    _log_in_out(u'plone.logout', u'logout', obj)
+
+
+def _start_process(title, text, tags):
+    global dd_msg_pool
+    now = dt.now()
+    date_happened = time.mktime(now.timetuple())
+    msg = dict(type='dd_event',
+               title=title,
+               text=text,
+               date_happened=date_happened,
+               tags=tags)
+    dd_msg_pool.append(msg)
+
+
+def processStart(event):
+    """
+
+    :param event:
+    :return:
+    """
+    #import pdb;pdb.set_trace()
+    title = _(u"Zope Process Start")
+    text = _(u"Zope Process Start")
+    tags = {}
+    _start_process(title, text, tags)
+
+
+def databaseOpened(event):
+    """
+
+    :param event:
+    :return:
+    """
+
+    title = _(u"ZODB Opened")
+    text = _(u"ZODB Opened")
+    tags = {}
+    _start_process(title, text, tags)

@@ -18,6 +18,9 @@
   
   <i18n:registerTranslations directory="locales" />
 
+  <!-- browser -->
+  <include package=".browser" />
+
   <!-- control panel -->
   <include file="controlpanel.zcml" />
 
@@ -30,6 +33,17 @@
       description=""
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
+
+    <!-- subscriber -->
+    <subscriber
+        for="zope.processlifetime.IProcessStarting"
+        handler=".events.processStart"
+        />
+
+    <subscriber
+        for="zope.processlifetime.IDatabaseOpened"
+        handler=".events.databaseOpened"
+        />
 
 
 </configure>

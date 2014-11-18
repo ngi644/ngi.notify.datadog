@@ -14,7 +14,6 @@ src/ngi/notify/datadog/__init__.py
 src/ngi/notify/datadog/controlpanel.py
 src/ngi/notify/datadog/dd.py
 src/ngi/notify/datadog/events.py
-src/ngi/notify/datadog/indexer.py
 src/ngi/notify/datadog/testing.py
 src/ngi/notify/datadog/tests/__init__.py
 src/ngi/notify/datadog/tests/test_setup.py

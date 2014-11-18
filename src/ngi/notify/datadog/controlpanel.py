@@ -4,7 +4,6 @@ Created on 07/18/14
 
 @author: Takashi NAGAI
 """
-
 from zope import schema
 from zope.interface import Interface
 from plone.app.registry.browser import controlpanel
@@ -37,7 +36,6 @@ class DatadogEditForm(controlpanel.RegistryEditForm):
 
     schema = IDatadog
     label = _(u'Datadog_label', default=u'Datadog')
-
     description = _(u'Datadog', default=u'Settings for Datadog')
 
     def updateWidgets(self):

@@ -3,9 +3,9 @@ plone.app.dexterity [grok]
 plone.app.registry
 plone.namedfile [blobs]
 plone.app.textfield
-collective.dexteritytextindexer
 plone.api
 dogapi
+zope.processlifetime
 
 [test]
 plone.app.testing
