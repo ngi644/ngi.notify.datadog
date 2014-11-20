@@ -178,7 +178,6 @@ def cpChanged(event):
     user = api.user.get_current()
     metric_name = u'plone.configuration_changed'
     path = event.context.request.getURL()
-    print event.data
     tags = dict(user=user.id,
                 path=path)
     metric_datadog(metric_name, tags=tags)
