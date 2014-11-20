@@ -17,7 +17,8 @@ from Products.CMFCore.interfaces import IContentish
 from Products.PlonePAS.events import (UserInitialLoginInEvent,
                                       UserLoggedInEvent,
                                       UserLoggedOutEvent)
-from Products.CMFCore.interfaces import IActionSucceededEvent
+from Products.CMFCore.interfaces import (IActionSucceededEvent,
+                                         IActionRaisedExceptionEvent)
 from ngi.notify.datadog import _
 from ngi.notify.datadog import dd_msg_pool
 from ngi.notify.datadog.dd import (metric_datadog,
@@ -110,8 +111,7 @@ def _log_in_out(metric_name, action, obj):
     path = '/'.join(obj.getPhysicalPath())
     metric_name = metric_name
     tags = dict(user=user.id,
-                path=path,
-                action=action)
+                path=path)
     metric_datadog(metric_name, tags=tags)
 
 
@@ -123,7 +123,7 @@ def loggedIn(obj, event):
     :param event:
     :return:
     """
-    _log_in_out(u'plone.login', u'login', obj)
+    _log_in_out(u'plone.login', obj)
 
 
 @grok.subscribe(Interface, UserLoggedOutEvent)
@@ -134,14 +134,78 @@ def loggedOut(obj, event):
     :param event:
     :return:
     """
-    _log_in_out(u'plone.logout', u'logout', obj)
+    _log_in_out(u'plone.logout', obj)
+
+
+def userCreated(event):
+    """
+
+    :param event:
+    :return:
+    """
+    principal = event.principal
+    new_userid = principal.getUserId()
+    user = api.user.get_current()
+    metric_name = u'plone.created_user'
+    tags = dict(user=user.id,
+                userid=new_userid)
+    metric_datadog(metric_name, tags=tags)
+
+
+def userDeleted(event):
+    """
+
+    :param event:
+    :return:
+    """
+    principal = event.principal
+    delete_userid = principal
+    user = api.user.get_current()
+    metric_name = u'plone.deleted_user'
+    tags = dict(user=user.id,
+                userid=delete_userid)
+    metric_datadog(metric_name, tags=tags)
+
+
+def cpChanged(event):
+    """
+
+    :param event:
+    :return:
+    """
+    #import pdb;pdb.set_trace()
+
+    user = api.user.get_current()
+    metric_name = u'plone.configuration_changed'
+    path = event.context.request.getURL()
+    print event.data
+    tags = dict(user=user.id,
+                path=path)
+    metric_datadog(metric_name, tags=tags)
+
+
+def actionRaisedEvent(obj, event):
+    """
+
+    :param obj:
+    :param event:
+    :return:
+    """
+    title = u'Workflow action error'
+    text = u'Workflow action error'
+    tags = dict()
+    event_datadog(
+        title,
+        text,
+        tags=tags
+    )
 
 
 def _start_process(title, text, tags):
     global dd_msg_pool
     now = dt.now()
     date_happened = time.mktime(now.timetuple())
-    msg = dict(type='dd_event',
+    msg = dict(type=u'dd_event',
                title=title,
                text=text,
                date_happened=date_happened,

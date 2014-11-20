@@ -45,5 +45,24 @@
         handler=".events.databaseOpened"
         />
 
+    <subscriber
+        for="Products.CMFCore.interfaces.IActionRaisedExceptionEvent"
+        handler=".events.actionRaisedEvent"
+        />
+
+    <subscriber
+        for="Products.PluggableAuthService.interfaces.events.IPrincipalCreatedEvent"
+        handler=".events.userCreated"
+        />
+
+    <subscriber
+        for="Products.PluggableAuthService.interfaces.events.IPrincipalDeletedEvent"
+        handler=".events.userDeleted"
+        />
+
+    <subscriber
+        for="plone.app.controlpanel.interfaces.IConfigurationChangedEvent"
+        handler=".events.cpChanged"
+        />
 
 </configure>
