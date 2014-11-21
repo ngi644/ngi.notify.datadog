@@ -17,7 +17,9 @@
   <include package=".browser" />
 
   <!-- control panel -->
-  <include file="controlpanel.zcml" />
+  <include
+    zcml:condition="installed ngi.notify.datadog"
+    file="controlpanel.zcml" />
 
   <!-- Resource directory for images -->
   <plone:static
