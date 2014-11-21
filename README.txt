@@ -45,5 +45,7 @@ Add the following to your buildout:
       </clock-server>
 
 
+Re-run buildout.
+
 Install via quickinstaller or the Add Ons control panel.
 

@@ -42,7 +42,6 @@ setup(name=u'ngi.notify.datadog',
           'setuptools',
           # -*- Extra requirements: -*-
           'plone.app.registry',
-          'plone.namedfile [blobs]',
           'plone.api',
           'dogapi',
           'dogstatsd-python',

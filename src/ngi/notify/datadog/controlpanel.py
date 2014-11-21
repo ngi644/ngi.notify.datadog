@@ -17,7 +17,7 @@ class IDatadog(Interface):
         title=_(u'use_dogstatsd_tetxt',
                 default=u"Using the DogStatsD"),
         description=_(u"use_dogstatsd_help", default=u'Please check when using the DogStatsD.'),
-        default=False,
+        default=True,
         required=True)
 
 

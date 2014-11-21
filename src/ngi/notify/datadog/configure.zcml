@@ -19,6 +19,12 @@
   <!-- control panel -->
   <include file="controlpanel.zcml" />
 
+  <!-- Resource directory for images -->
+  <plone:static
+        directory="static"
+        type="theme"
+        />
+
   <!-- Register an extension profile to make the product installable
        in Plone -->
   <genericsetup:registerProfile
@@ -43,12 +49,14 @@
         />
 
     <subscriber
+        zcml:condition="installed Products.CMFCore"
         for="Products.CMFCore.interfaces.IContentish
              Products.CMFCore.interfaces.IActionRaisedExceptionEvent"
         handler=".events.actionRaisedEvent"
         />
 
     <subscriber
+        zcml:condition="installed Products.CMFCore"
         for="Products.CMFCore.interfaces.IContentish
              Products.CMFCore.interfaces.IActionSucceededEvent"
         handler=".events.actionRaisedEvent"
@@ -69,28 +77,33 @@
         />
 
     <subscriber
+        zcml:condition="installed Products.PlonePAS"
         for="zope.interface.Interface
              Products.PlonePAS.events.UserLoggedInEvent"
         handler=".events.loggedIn"
         />
 
     <subscriber
+        zcml:condition="installed Products.PlonePAS"
         for="zope.interface.Interface
              Products.PlonePAS.events.UserLoggedOutEvent"
         handler=".events.loggedOut"
         />
 
     <subscriber
+        zcml:condition="installed Products.PluggableAuthService"
         for="Products.PluggableAuthService.interfaces.events.IPrincipalCreatedEvent"
         handler=".events.userCreated"
         />
 
     <subscriber
+        zcml:condition="installed Products.PluggableAuthService"
         for="Products.PluggableAuthService.interfaces.events.IPrincipalDeletedEvent"
         handler=".events.userDeleted"
         />
 
     <subscriber
+        zcml:condition="installed plone.app.controlpanel"
         for="plone.app.controlpanel.interfaces.IConfigurationChangedEvent"
         handler=".events.cpChanged"
         />
