@@ -22,10 +22,10 @@ def createdContent(obj, event):
     try:
         state = api.content.get_state(obj=obj)
     except:
-        state = u'none'
+        state = 'none'
     portal_type = obj.portal_type
     content_type = obj.Type()
-    metric_name = u'plone.created'
+    metric_name = 'plone.created'
     tags = dict(user=user.id,
                 path=path,
                 title=obj.title,
@@ -44,10 +44,10 @@ def modifiedContent(obj, event):
     try:
         state = api.content.get_state(obj=obj)
     except:
-        state = u'none'
+        state = 'none'
     portal_type = obj.portal_type
     content_type = obj.Type()
-    metric_name = u'plone.modified'
+    metric_name = 'plone.modified'
     tags = dict(user=user.id,
                 path=path,
                 title=obj.title,
@@ -70,11 +70,11 @@ def actionSucceeded(obj, event):
     try:
         state = api.content.get_state(obj=obj)
     except:
-        state = u'none'
+        state = 'none'
     portal_type = obj.portal_type
     content_type = obj.Type()
     wf_action = event.action
-    metric_name = u'plone.workflow_action'
+    metric_name = 'plone.workflow_action'
     tags = dict(user=user.id,
                 path=path,
                 title=obj.title,
@@ -107,7 +107,7 @@ def loggedIn(obj, event):
     :param event:
     :return:
     """
-    _log_in_out(u'plone.login', obj)
+    _log_in_out('plone.login', obj)
 
 
 def loggedOut(obj, event):
@@ -117,7 +117,7 @@ def loggedOut(obj, event):
     :param event:
     :return:
     """
-    _log_in_out(u'plone.logout', obj)
+    _log_in_out('plone.logout', obj)
 
 
 def userCreated(event):
@@ -129,7 +129,7 @@ def userCreated(event):
     principal = event.principal
     new_userid = principal.getUserId()
     user = api.user.get_current()
-    metric_name = u'plone.created_user'
+    metric_name = 'plone.created_user'
     tags = dict(user=user.id,
                 userid=new_userid)
     metric_datadog(metric_name, tags=tags)
@@ -144,7 +144,7 @@ def userDeleted(event):
     principal = event.principal
     delete_userid = principal
     user = api.user.get_current()
-    metric_name = u'plone.deleted_user'
+    metric_name = 'plone.deleted_user'
     tags = dict(user=user.id,
                 userid=delete_userid)
     metric_datadog(metric_name, tags=tags)
@@ -159,7 +159,7 @@ def cpChanged(event):
     #import pdb;pdb.set_trace()
 
     user = api.user.get_current()
-    metric_name = u'plone.configuration_changed'
+    metric_name = 'plone.configuration_changed'
     path = event.context.request.getURL()
     tags = dict(user=user.id,
                 path=path)
@@ -173,8 +173,8 @@ def actionRaisedEvent(obj, event):
     :param event:
     :return:
     """
-    title = u'Workflow action error'
-    text = u'Workflow action error'
+    title = _(u'Workflow action error')
+    text = _(u'Workflow action error')
     tags = dict()
     event_datadog(
         title,

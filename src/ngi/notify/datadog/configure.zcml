@@ -23,7 +23,7 @@
        in Plone -->
   <genericsetup:registerProfile
       name="default"
-      title="Notify for Datadog"
+      title="Notify events to DataDog"
       directory="profiles/default"
       description=""
       provides="Products.GenericSetup.interfaces.EXTENSION"

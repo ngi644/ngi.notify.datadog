@@ -1,15 +1,18 @@
 Metadata-Version: 1.1
 Name: ngi.notify.datadog
 Version: 1.0b1
-Summary: UNKNOWN
+Summary: Notify events to DataDog
 Home-page: http://svn.plone.org/svn/collective/
 Author: Takashi NAGAI
-Author-email: UNKNOWN
+Author-email: ngi644@gmail.com
 License: gpl
 Description: .. contents::
         
         Introduction
         ============
+        
+        Notify events to DataDog
+        --------------------------------------------
         
         
         
@@ -30,14 +33,12 @@ Description: .. contents::
         Note:  place names and roles of the people who contribute to this package
                in this file, one to a line, like so:
         
-        - Joe Schmoe, Original Author
-        - Bob Slob, contributed monkey patches
-        - Jane Main, wrote flibberty module
+        - Takashi Nagai, Original Author
         
         Changelog
         =========
         
-        1.0-dev (unreleased)
+        1.0b1 (unreleased)
         --------------------
         
         - Package created using templer

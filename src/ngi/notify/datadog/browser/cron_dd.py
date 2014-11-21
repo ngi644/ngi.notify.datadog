@@ -23,7 +23,7 @@ class CronDatadog(BrowserView):
         context = self.context
         request = context.REQUEST
 
-        #post pool data
+        #pool data
         global dd_msg_pool
         if dd_msg_pool:
             for x in dd_msg_pool:
@@ -34,9 +34,15 @@ class CronDatadog(BrowserView):
                         date_happened=x['date_happened'],
                         tags=x['tags']
                     )
+                elif x['type'] == 'dd_metric':
+                    metric_datadog(
+                        x['metric_name'],
+                        x['value'],
+                        tags=x['tags']
+                    )
             dd_msg_pool = []
 
-        #db size
+        #DB size
         metric_name = 'plone.db_info'
         db_name, value = self.db_info()
         db_tags = dict(db_name=db_name)
