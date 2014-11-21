@@ -6,26 +6,13 @@ Created on 07/18/14
 """
 import time
 from datetime import datetime as dt
-from zope.interface import Interface
-from five import grok
 from plone import api
-from zope.lifecycleevent.interfaces import (IObjectCreatedEvent,
-                                            IObjectModifiedEvent)
-from zope.processlifetime import (IDatabaseOpened,
-                                  IProcessStarting)
-from Products.CMFCore.interfaces import IContentish
-from Products.PlonePAS.events import (UserInitialLoginInEvent,
-                                      UserLoggedInEvent,
-                                      UserLoggedOutEvent)
-from Products.CMFCore.interfaces import (IActionSucceededEvent,
-                                         IActionRaisedExceptionEvent)
 from ngi.notify.datadog import _
 from ngi.notify.datadog import dd_msg_pool
 from ngi.notify.datadog.dd import (metric_datadog,
                                    event_datadog)
 
 
-@grok.subscribe(IContentish, IObjectCreatedEvent)
 def createdContent(obj, event):
     """
     Created Event
@@ -48,7 +35,6 @@ def createdContent(obj, event):
     metric_datadog(metric_name, tags=tags)
 
 
-@grok.subscribe(IContentish, IObjectModifiedEvent)
 def modifiedContent(obj, event):
     """
     Modified Event
@@ -71,7 +57,6 @@ def modifiedContent(obj, event):
     metric_datadog(metric_name, tags=tags)
 
 
-@grok.subscribe(IContentish, IActionSucceededEvent)
 def actionSucceeded(obj, event):
     """
 
@@ -100,11 +85,11 @@ def actionSucceeded(obj, event):
     metric_datadog(metric_name, tags=tags)
 
 
-def _log_in_out(metric_name, action, obj):
+def _log_in_out(metric_name, obj):
     """
 
     :param metric_name:
-    :param action:
+    :param obj:
     :return:
     """
     user = api.user.get_current()
@@ -115,7 +100,6 @@ def _log_in_out(metric_name, action, obj):
     metric_datadog(metric_name, tags=tags)
 
 
-@grok.subscribe(Interface, UserLoggedInEvent)
 def loggedIn(obj, event):
     """
     logged_out event
@@ -126,7 +110,6 @@ def loggedIn(obj, event):
     _log_in_out(u'plone.login', obj)
 
 
-@grok.subscribe(Interface, UserLoggedOutEvent)
 def loggedOut(obj, event):
     """
     logged_out event

@@ -1,8 +1,6 @@
 setuptools
-plone.app.dexterity [grok]
 plone.app.registry
 plone.namedfile [blobs]
-plone.app.textfield
 plone.api
 dogapi
 zope.processlifetime

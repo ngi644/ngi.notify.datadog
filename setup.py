@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.0'
+version = '1.0b1'
 
 long_description = (
     open('README.txt').read()
@@ -41,13 +41,11 @@ setup(name=u'ngi.notify.datadog',
       install_requires=[
           'setuptools',
           # -*- Extra requirements: -*-
-'plone.app.dexterity [grok]',
-'plone.app.registry',
-'plone.namedfile [blobs]',
-'plone.app.textfield',
-'plone.api',
-'dogapi',
-'zope.processlifetime',
+          'plone.app.registry',
+          'plone.namedfile [blobs]',
+          'plone.api',
+          'dogapi',
+          'zope.processlifetime',
       ],
       extras_require={'test': ['plone.app.testing']},
       entry_points="""

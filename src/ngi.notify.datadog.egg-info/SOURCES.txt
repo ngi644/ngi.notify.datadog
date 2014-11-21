@@ -15,5 +15,7 @@ src/ngi/notify/datadog/controlpanel.py
 src/ngi/notify/datadog/dd.py
 src/ngi/notify/datadog/events.py
 src/ngi/notify/datadog/testing.py
+src/ngi/notify/datadog/browser/__init__.py
+src/ngi/notify/datadog/browser/cron_dd.py
 src/ngi/notify/datadog/tests/__init__.py
 src/ngi/notify/datadog/tests/test_setup.py
