@@ -8,6 +8,7 @@ Created on 11/17/14
 __author__ = 'nagai'
 
 import time
+import logging
 from random import random
 from datetime import datetime as dt
 from dogapi import dog_http_api
@@ -17,6 +18,9 @@ try:
     from itertools import imap
 except ImportError:
     imap = map
+from ngi.notify.datadog import _
+
+logger = logging.getLogger(__name__)
 
 
 class DogStasd4Plone(statsd.DogStatsd):
@@ -46,12 +50,16 @@ def _get_connect_string():
 
     :return:
     """
-    use_dogstatsd = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.use_dogstatsd')
-    statsd_host = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.statsd_host')
-    statsd_port = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.statsd_port')
-    dd_api_key = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.api_key')
-    dd_app_key = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.application_key')
-    host_name = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.host_name')
+    use_dogstatsd = statsd_host = statsd_port = dd_api_key = dd_app_key = host_name = ''
+    try:
+        use_dogstatsd = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.use_dogstatsd')
+        statsd_host = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.statsd_host')
+        statsd_port = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.statsd_port')
+        dd_api_key = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.api_key')
+        dd_app_key = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.application_key')
+        host_name = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.host_name')
+    except:
+        logging.warning('ngi.notify.datadog:No registry keys')
     return use_dogstatsd, statsd_host, statsd_port, dd_api_key, dd_app_key, host_name
 
 

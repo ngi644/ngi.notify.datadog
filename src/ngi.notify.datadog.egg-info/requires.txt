@@ -1,6 +1,5 @@
 setuptools
 plone.app.registry
-plone.namedfile [blobs]
 plone.api
 dogapi
 dogstatsd-python
