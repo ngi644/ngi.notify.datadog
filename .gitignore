@@ -17,3 +17,14 @@ jenkins.plone.org.auth.cfg
 *.bak
 /docs/build
 .idea
+*~
+*.pyc
+*.pyo
+dist/*
+build/*
+*.egg-info/*
+.semantic.cache
+.DS_Store
+TAGS
+.DS_Store
+.svn
