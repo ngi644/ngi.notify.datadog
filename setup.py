@@ -16,7 +16,7 @@ long_description = (
 
 setup(name=u'ngi.notify.datadog',
       version=version,
-      description="Notify events to DataDog",
+      description="Notify the Plone operation event to the DataDog",
       long_description=long_description,
       # Get more strings from
       # http://pypi.python.org/pypi?%3Aaction=list_classifiers

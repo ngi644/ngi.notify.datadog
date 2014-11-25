@@ -3,7 +3,8 @@
 Introduction
 ============
 
-Notify events to DataDog
+This product is notify the Plone operation event to the DataDog.
+
 
 Supported events
 -------------------------------------------
@@ -22,6 +23,9 @@ Supported events
 
 Usage
 --------------------------------------------
+
+For now only tested with latest Plone 4.3:
+
 
 Add the following to your buildout:
 
