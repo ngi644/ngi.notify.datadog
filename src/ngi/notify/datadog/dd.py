@@ -87,7 +87,7 @@ def metric_datadog(metric_name, value=1.0, tags={}):
     if metric_name:
         dd_tags = _dict2list(tags)
         if use_dogstatsd:
-            statsd_plone.connect(statsd_host, statsd_port)
+            initialize(statsd_host=statsd_host, statsd_port=statsd_port)
             statsd_plone.gauge(metric=metric_name, value=value, tags=dd_tags)
         elif dd_api_key:
             keys = {
@@ -120,7 +120,7 @@ def event_datadog(title, text, date_happened='', tags={}):
     if title and text:
         dd_tags = _dict2list(tags)
         if use_dogstatsd:
-            statsd_plone.connect(statsd_host, statsd_port)
+            initialize(statsd_host=statsd_host, statsd_port=statsd_port)
             statsd_plone.event(title=title, text=text, date_happened=date_happened, tags=dd_tags)
         elif dd_api_key:
             keys = {
