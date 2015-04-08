@@ -11,8 +11,9 @@ import time
 import logging
 from random import random
 from datetime import datetime as dt
-from dogapi import dog_http_api
-import statsd
+from datadog import initialize
+from datadog import api as dd_api
+from datadog.dogstatsd import base
 from plone import api
 from AccessControl.SecurityInfo import ModuleSecurityInfo
 try:
@@ -25,7 +26,7 @@ logger = logging.getLogger(__name__)
 security = ModuleSecurityInfo('ngi.notify.datadog.dd')
 
 
-class DogStasd4Plone(statsd.DogStatsd):
+class DogStasd4Plone(base.DogStatsd):
     """
     DogStatsd wrapper class
     """
@@ -70,6 +71,8 @@ def _dict2list(tags={}):
 
 
 security.declarePublic('metric_datadog')
+
+
 def metric_datadog(metric_name, value=1.0, tags={}):
     """
     post to Datadog service
@@ -85,14 +88,19 @@ def metric_datadog(metric_name, value=1.0, tags={}):
         dd_tags = _dict2list(tags)
         if use_dogstatsd:
             statsd_plone.connect(statsd_host, statsd_port)
-            statsd_plone.gauge(metric_name, value, tags=dd_tags)
+            statsd_plone.gauge(metric=metric_name, value=value, tags=dd_tags)
         elif dd_api_key:
-            dog_http_api.api_key = dd_api_key
-            dog_http_api.application_key = dd_app_key
-            dog_http_api.metric(metric_name, value, host=host_name, tags=dd_tags)
+            keys = {
+                'api_key': dd_api_key,
+                'app_key': dd_app_key
+            }
+            initialize(**keys)
+            dd_api.Metric.send(metric=metric_name, points=value, host=host_name, tags=dd_tags)
 
 
 security.declarePublic('event_datadog')
+
+
 def event_datadog(title, text, date_happened='', tags={}):
     """
 
@@ -113,8 +121,11 @@ def event_datadog(title, text, date_happened='', tags={}):
         dd_tags = _dict2list(tags)
         if use_dogstatsd:
             statsd_plone.connect(statsd_host, statsd_port)
-            statsd_plone.event(title, text, date_happened=date_happened, tags=dd_tags)
+            statsd_plone.event(title=title, text=text, date_happened=date_happened, tags=dd_tags)
         elif dd_api_key:
-            dog_http_api.api_key = dd_api_key
-            dog_http_api.application_key = dd_app_key
-            dog_http_api.event_with_response(title, text, date_happened=date_happened, tags=dd_tags, host=host_name)
+            keys = {
+                'api_key': dd_api_key,
+                'app_key': dd_app_key
+            }
+            initialize(**keys)
+            dd_api.Event.create(title=title, text=text, date_happened=date_happened, tags=dd_tags, host=host_name)
