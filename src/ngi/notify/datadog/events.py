@@ -18,7 +18,10 @@ def createdContent(obj, event):
     Created Event
     """
     user = api.user.get_current()
-    path = '/'.join(obj.getPhysicalPath())
+    try:
+        path = u'/'.join(obj.getPhysicalPath())
+    except:
+        path = u''
     try:
         state = api.content.get_state(obj=obj)
     except:
