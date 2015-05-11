@@ -26,12 +26,15 @@ def createdContent(obj, event):
         state = api.content.get_state(obj=obj)
     except:
         state = 'none'
+    title = obj.title
+    if not isinstance(title, unicode):
+        title = unicode(title, 'utf-8')
     portal_type = obj.portal_type
     content_type = obj.Type()
     metric_name = 'plone.created'
     tags = dict(user=user.id,
                 path=path,
-                title=obj.title,
+                title=obj,
                 content_type=content_type,
                 portal_type=portal_type,
                 workflow=state)
@@ -48,12 +51,15 @@ def modifiedContent(obj, event):
         state = api.content.get_state(obj=obj)
     except:
         state = 'none'
+    title = obj.title
+    if not isinstance(title, unicode):
+        title = unicode(title, 'utf-8')
     portal_type = obj.portal_type
     content_type = obj.Type()
     metric_name = 'plone.modified'
     tags = dict(user=user.id,
                 path=path,
-                title=obj.title,
+                title=title,
                 content_type=content_type,
                 portal_type=portal_type,
                 workflow=state)
@@ -67,24 +73,27 @@ def actionSucceeded(obj, event):
     :param event:
     :return:
     """
-    #import pdb;pdb.set_trace()
     user = api.user.get_current()
     path = '/'.join(obj.getPhysicalPath())
     try:
         state = api.content.get_state(obj=obj)
     except:
         state = 'none'
+    title = obj.title
+    if not isinstance(title, unicode):
+        title = unicode(title, 'utf-8')
     portal_type = obj.portal_type
     content_type = obj.Type()
     wf_action = event.action
     metric_name = 'plone.workflow_action'
     tags = dict(user=user.id,
                 path=path,
-                title=obj.title,
+                title=title,
                 content_type=content_type,
                 portal_type=portal_type,
                 action=wf_action,
                 workflow=state)
+    print tags
     metric_datadog(metric_name, tags=tags)
 
 
