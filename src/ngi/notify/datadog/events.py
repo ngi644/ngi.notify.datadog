@@ -11,59 +11,73 @@ from ngi.notify.datadog import _
 from ngi.notify.datadog import dd_msg_pool
 from ngi.notify.datadog.dd import (metric_datadog,
                                    event_datadog)
+import logging
+logger = logging.getLogger(__name__)
+
+
+def _check_portaltype(portal_type=''):
+    try:
+        ignore_types = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.ignore_portal_type')
+        if portal_type in ignore_types:
+            return False
+    except:
+        logging.warning('ngi.notify.datadog:No registry keys')
+    return True
 
 
 def createdContent(obj, event):
     """
     Created Event
     """
-    user = api.user.get_current()
-    try:
-        path = u'/'.join(obj.getPhysicalPath())
-    except:
-        path = u''
-    try:
-        state = api.content.get_state(obj=obj)
-    except:
-        state = 'none'
-    title = obj.title
-    if not isinstance(title, unicode):
-        title = unicode(title, 'utf-8')
     portal_type = obj.portal_type
-    content_type = obj.Type()
-    metric_name = 'plone.created'
-    tags = dict(user=user.id,
-                path=path,
-                title=obj,
-                content_type=content_type,
-                portal_type=portal_type,
-                workflow=state)
-    metric_datadog(metric_name, tags=tags)
+    if _check_portaltype(portal_type):
+        user = api.user.get_current()
+        try:
+            path = u'/'.join(obj.getPhysicalPath())
+        except:
+            path = u''
+        try:
+            state = api.content.get_state(obj=obj)
+        except:
+            state = 'none'
+        title = obj.title
+        if not isinstance(title, unicode):
+            title = unicode(title, 'utf-8')
+        content_type = obj.Type()
+        metric_name = 'plone.created'
+        tags = dict(user=user.id,
+                    path=path,
+                    title=obj,
+                    content_type=content_type,
+                    portal_type=portal_type,
+                    workflow=state)
+        metric_datadog(metric_name, tags=tags)
 
 
 def modifiedContent(obj, event):
     """
     Modified Event
     """
-    user = api.user.get_current()
-    path = '/'.join(obj.getPhysicalPath())
-    try:
-        state = api.content.get_state(obj=obj)
-    except:
-        state = 'none'
-    title = obj.title
-    if not isinstance(title, unicode):
-        title = unicode(title, 'utf-8')
     portal_type = obj.portal_type
-    content_type = obj.Type()
-    metric_name = 'plone.modified'
-    tags = dict(user=user.id,
-                path=path,
-                title=title,
-                content_type=content_type,
-                portal_type=portal_type,
-                workflow=state)
-    metric_datadog(metric_name, tags=tags)
+    if _check_portaltype(portal_type):
+        user = api.user.get_current()
+        path = '/'.join(obj.getPhysicalPath())
+        try:
+            state = api.content.get_state(obj=obj)
+        except:
+            state = 'none'
+        title = obj.title
+        if not isinstance(title, unicode):
+            title = unicode(title, 'utf-8')
+        content_type = obj.Type()
+        metric_name = 'plone.modified'
+        tags = dict(user=user.id,
+                    path=path,
+                    title=title,
+                    content_type=content_type,
+                    portal_type=portal_type,
+                    workflow=state)
+        metric_datadog(metric_name, tags=tags)
 
 
 def actionSucceeded(obj, event):

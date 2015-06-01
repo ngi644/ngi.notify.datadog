@@ -20,6 +20,25 @@ Supported events
 - ZODB size(using Zope clock server).
 
 
+Tags
+--------------------------------------------
+
+- plone_instance
+
+- user
+
+- path
+
+- workflow
+
+- action
+
+- portal_type
+
+- content_type
+
+- title
+
 
 Usage
 --------------------------------------------

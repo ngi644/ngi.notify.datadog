@@ -53,7 +53,7 @@ def _get_connect_string():
 
     :return:
     """
-    use_dogstatsd = statsd_host = statsd_port = dd_api_key = dd_app_key = host_name = ''
+    use_dogstatsd = statsd_host = statsd_port = dd_api_key = dd_app_key = host_name = instance_name = ''
     try:
         use_dogstatsd = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.use_dogstatsd')
         statsd_host = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.statsd_host')
@@ -61,9 +61,10 @@ def _get_connect_string():
         dd_api_key = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.api_key')
         dd_app_key = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.application_key')
         host_name = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.host_name')
+        instance_name = api.portal.get_registry_record('ngi.notify.datadog.controlpanel.IDatadog.instance_name')
     except:
         logging.warning('ngi.notify.datadog:No registry keys')
-    return use_dogstatsd, statsd_host, statsd_port, dd_api_key, dd_app_key, host_name
+    return use_dogstatsd, statsd_host, statsd_port, dd_api_key, dd_app_key, host_name, instance_name
 
 
 def _dict2list(tags={}):
@@ -82,9 +83,10 @@ def metric_datadog(metric_name, value=1.0, tags={}):
     :return:
     """
 
-    use_dogstatsd, statsd_host, statsd_port, dd_api_key, dd_app_key, host_name = _get_connect_string()
+    use_dogstatsd, statsd_host, statsd_port, dd_api_key, dd_app_key, host_name, instance_name = _get_connect_string()
 
     if metric_name:
+        tags['plone_instance'] = instance_name
         dd_tags = _dict2list(tags)
         if use_dogstatsd:
             initialize(statsd_host=statsd_host, statsd_port=statsd_port)
@@ -111,13 +113,14 @@ def event_datadog(title, text, date_happened='', tags={}):
     :return:
     """
 
-    use_dogstatsd, statsd_host, statsd_port, dd_api_key, dd_app_key, host_name = _get_connect_string()
+    use_dogstatsd, statsd_host, statsd_port, dd_api_key, dd_app_key, host_name, instance_name = _get_connect_string()
 
     if not date_happened:
         now = dt.now()
         date_happened = time.mktime(now.timetuple())
 
     if title and text:
+        tags['plone_instance'] = instance_name
         dd_tags = _dict2list(tags)
         if use_dogstatsd:
             initialize(statsd_host=statsd_host, statsd_port=statsd_port)

@@ -13,13 +13,27 @@ from ngi.notify.datadog import _
 class IDatadog(Interface):
     """ Datadog settings """
 
+    instance_name = schema.TextLine(
+        title=_(u'instance_name_title', default=u'Plone instace Name'),
+        description=_(u"instance_name_help",
+                      default=u'Plone instance name'),
+        required=False,
+        default=u'Plone'
+    )
+
+    ignore_portal_type = schema.List(
+            title=_(u'ignore_portal_type_title', default=u'Ignore Portal Type'),
+            description=_(u'ignore_portal_type_help', default=u''),
+            required=False,
+            value_type=schema.TextLine(title=_(u'Portal Type')),
+    )
+
     use_dogstatsd = schema.Bool(
         title=_(u'use_dogstatsd_tetxt',
                 default=u"Using the DogStatsD"),
         description=_(u"use_dogstatsd_help", default=u'Please check when using the DogStatsD.'),
         default=True,
         required=True)
-
 
     statsd_host = schema.TextLine(
         title=_(u'statsd_port_title', default=u'DogStatsD Host'),

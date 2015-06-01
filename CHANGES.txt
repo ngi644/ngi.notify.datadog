@@ -1,6 +1,14 @@
 Changelog
 =========
 
+
+1.1
+--------------------------
+
+- add parameters (plone instance name, ignore portal types)
+
+
+
 1.0
 --------------------
 
