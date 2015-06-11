@@ -74,12 +74,13 @@ def _dict2list(tags={}):
 security.declarePublic('metric_datadog')
 
 
-def metric_datadog(metric_name, value=1.0, tags={}):
+def metric_datadog(metric_name, value=1.0, tags={}, metric_type=u'gauge'):
     """
     post to Datadog service
-    :param metric_name:
-    :param value:
-    :param tags:
+    :param metric_name: string
+    :param value: float
+    :param tags: dict
+    :param metric_type: string
     :return:
     """
 
@@ -90,14 +91,19 @@ def metric_datadog(metric_name, value=1.0, tags={}):
         dd_tags = _dict2list(tags)
         if use_dogstatsd:
             initialize(statsd_host=statsd_host, statsd_port=statsd_port)
-            statsd_plone.gauge(metric=metric_name, value=value, tags=dd_tags)
+            if metric_type == u'gauge':
+                statsd_plone.gauge(metric=metric_name, value=value, tags=dd_tags)
+            elif metric_type == u'counter':
+                statsd_plone.increment(metric=metric_name, tags=dd_tags)
+            elif metric_type == u'histogram':
+                statsd_plone.histogram(metric=metric_name, value=value, tags=dd_tags)
         elif dd_api_key:
             keys = {
                 'api_key': dd_api_key,
                 'app_key': dd_app_key
             }
             initialize(**keys)
-            dd_api.Metric.send(metric=metric_name, points=value, host=host_name, tags=dd_tags)
+            dd_api.Metric.send(metric=metric_name, points=value, host=host_name, tags=dd_tags, metric_type=metric_type)
 
 
 security.declarePublic('event_datadog')
